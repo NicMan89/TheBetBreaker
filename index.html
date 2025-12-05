@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arbitrage Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c33;
+            display: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            max-width: 1200px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .welcome {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+        }
+
+        .card {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .url-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .url-input-group input {
+            flex: 1;
+        }
+
+        .add-url-btn {
+            padding: 12px 25px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .add-url-btn:hover {
+            background: #45a049;
+        }
+
+        .url-list {
+            margin-top: 20px;
+        }
+
+        .url-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .url-item span {
+            color: #666;
+            font-size: 14px;
+            word-break: break-all;
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .remove-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .remove-btn:hover {
+            background: #d32f2f;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .analyze-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            margin-top: 20px;
+        }
+
+        .arbitrage-opportunity {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .arbitrage-opportunity h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .odds-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .odd-item {
+            background: rgba(255,255,255,0.2);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .odd-item .bookmaker {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .odd-item .value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .profit-info {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .profit-info .label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .profit-info .value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #1976d2;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .info-box li {
+            margin-bottom: 5px;
+        }
+
+        /* Tabs Styles */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            color: #666;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+            margin-left: 5px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Bookmakers Grid */
+        .bookmakers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .bookmaker-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .bookmaker-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .bookmaker-checkbox {
+            display: flex;
+            align-items: flex-start;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .bookmaker-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .bookmaker-info {
+            flex: 1;
+        }
+
+        .bookmaker-name {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .bookmaker-sports {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* Bonuses List */
+        .bonuses-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .bonus-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .bonus-card:hover {
+            border-color: #4caf50;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .bonus-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .bonus-header h3 {
+            color: #667eea;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .bonus-amount {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .bonus-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .bonus-type {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .bonus-conditions {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+            border-left: 3px solid #667eea;
+        }
+
+        .bonus-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .bonus-validity {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .bonus-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .bonus-link:hover {
+            color: #764ba2;
+            transform: translateX(3px);
+        }
+
+        /* URL List Improvements */
+        .bookmaker-url {
+            border-left: 4px solid #667eea;
+        }
+
+        .custom-url {
+            border-left: 4px solid #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div id="loginContainer" class="container">
+        <div class="logo">
+            <h1>💎 Arbitrage Analyzer</h1>
+            <p>Sistema di Analisi Quote Sportive</p>
+        </div>
+        
+        <div id="errorMsg" class="error"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required autocomplete="username">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required autocomplete="current-password">
+            </div>
+            
+            <button type="submit" class="btn">Accedi</button>
+        </form>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="container dashboard hidden">
+        <div class="dashboard-header">
+            <div class="welcome">Benvenuto, <span id="userDisplay"></span>!</div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('bookmakers')">
+                🎰 Bookmaker <span id="selectedCount" class="badge">0</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('custom')">
+                🔗 URL Personalizzati
+            </button>
+            <button class="tab-btn" onclick="switchTab('bonuses')">
+                🎁 Bonus Attivi
+            </button>
+            <button class="tab-btn" onclick="switchTab('settings')">
+                ⚙️ Impostazioni
+            </button>
+        </div>
+
+        <!-- Tab: Bookmakers -->
+        <div id="bookmakersTab" class="tab-content active">
+            <div class="card">
+                <h2>🎰 Seleziona Bookmaker</h2>
+                <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
+                    Seleziona i bookmaker da analizzare. Ogni bookmaker includerà automaticamente le quote per Calcio, Tennis e Basket.
+                </p>
+                <div class="bookmakers-grid" id="bookmakersGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Custom URLs -->
+        <div id="customTab" class="tab-content">
+            <div class="card">
+                <h2>🔗 Aggiungi URL Personalizzati</h2>
+                <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
+                    Aggiungi URL di altri bookmaker o pagine specifiche con quote.
+                </p>
+                <div class="url-input-group">
+                    <input type="text" id="urlInput" placeholder="https://esempio.com/quote/partita" />
+                    <button class="add-url-btn" onclick="addUrl()">➕ Aggiungi</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Bonuses -->
+        <div id="bonusesTab" class="tab-content">
+            <div class="card">
+                <h2>🎁 Bonus Benvenuto Attivi</h2>
+                <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
+                    Bonus attuali dei principali bookmaker. Verifica sempre i termini e condizioni sul sito ufficiale.
+                </p>
+                <div class="bonuses-list" id="bonusesList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Settings -->
+        <div id="settingsTab" class="tab-content">
+            <div class="card">
+                <h2>⚙️ Configurazione API</h2>
+                <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
+                    Configura The-Odds-API per ottenere quote reali invece di dati simulati.
+                </p>
+                
+                <div class="info-box" style="margin-bottom: 20px;">
+                    <strong>📡 The-Odds-API</strong>
+                    <ul>
+                        <li>✅ 500 richieste gratuite al mese</li>
+                        <li>✅ Quote reali da 20+ bookmaker</li>
+                        <li>✅ Aggiornamenti in tempo reale</li>
+                        <li>🔗 Registrati su: <a href="https://the-odds-api.com" target="_blank" style="color: #667eea;">the-odds-api.com</a></li>
+                    </ul>
+                </div>
+
+                <div style="background: white; padding: 20px; border-radius: 12px; border: 2px solid #e0e0e0;">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label for="apiKeyInput" style="display: block; margin-bottom: 8px; font-weight: 600;">
+                            API Key:
+                        </label>
+                        <input 
+                            type="text" 
+                            id="apiKeyInput" 
+                            placeholder="Inserisci la tua API key da the-odds-api.com"
+                            style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-family: monospace;"
+                        />
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input 
+                                type="checkbox" 
+                                id="useRealDataCheckbox"
+                                style="width: 20px; height: 20px; margin-right: 10px; cursor: pointer;"
+                            />
+                            <span style="font-weight: 600;">Usa dati reali dalle API</span>
+                        </label>
+                        <p style="font-size: 12px; color: #999; margin-top: 5px; margin-left: 30px;">
+                            Se disabilitato, l'app userà dati simulati per demo
+                        </p>
+                    </div>
+
+                    <button 
+                        class="btn" 
+                        onclick="saveApiSettings()"
+                        style="width: 100%; margin-top: 10px;"
+                    >
+                        💾 Salva Configurazione
+                    </button>
+
+                    <div id="apiStatus" style="margin-top: 15px; padding: 12px; border-radius: 8px; display: none;">
+                        <!-- Status message -->
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 8px;">
+                    <strong style="color: #856404;">⚠️ Stato Attuale:</strong>
+                    <p id="currentApiStatus" style="margin-top: 8px; color: #856404; font-size: 14px;">
+                        <!-- Populated by JS -->
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- URL Summary (sempre visibile) -->
+        <div class="card">
+            <h2>📋 Riepilogo URL Selezionati</h2>
+            <div class="url-list" id="urlList"></div>
+            
+            <button class="analyze-btn" id="analyzeBtn" onclick="analyzeUrls()" disabled>
+                🔍 Analizza Quote
+            </button>
+        </div>
+
+        <!-- Results (sempre visibile) -->
+        <div class="card">
+            <h2>💰 Risultati Analisi</h2>
+            <div id="results">
+                <p style="color: #999; text-align: center;">Seleziona almeno 2 bookmaker o aggiungi URL personalizzati, poi clicca su "Analizza Quote"</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
