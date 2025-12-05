@@ -724,6 +724,73 @@
         <!-- Results (sempre visibile) -->
         <div class="card">
             <h2>💰 Risultati Analisi</h2>
+            
+            <!-- Filtri e Ordinamento -->
+            <div id="filtersSection" style="display: none; margin-bottom: 20px; padding: 20px; background: #f9f9f9; border-radius: 12px; border: 2px solid #e0e0e0;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <!-- Ordinamento -->
+                    <div>
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                            📊 Ordina per:
+                        </label>
+                        <select id="sortBy" onchange="applySortAndFilter()" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+                            <option value="profit-desc">Profitto % (maggiore)</option>
+                            <option value="profit-asc">Profitto % (minore)</option>
+                            <option value="amount-desc">Profitto € (maggiore)</option>
+                            <option value="amount-asc">Profitto € (minore)</option>
+                            <option value="date-asc">Data evento (prima)</option>
+                            <option value="date-desc">Data evento (dopo)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Filtro Sport -->
+                    <div>
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                            ⚽ Sport:
+                        </label>
+                        <select id="filterSport" onchange="applySortAndFilter()" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+                            <option value="all">Tutti</option>
+                            <option value="calcio">Calcio</option>
+                            <option value="tennis">Tennis</option>
+                            <option value="basket">Basket</option>
+                            <option value="hockey">Hockey</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Filtro Profitto Minimo -->
+                    <div>
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+                            💵 Profitto minimo %:
+                        </label>
+                        <input 
+                            type="number" 
+                            id="filterMinProfit" 
+                            value="0" 
+                            min="0" 
+                            max="100" 
+                            step="0.5"
+                            onchange="applySortAndFilter()"
+                            style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                        />
+                    </div>
+                    
+                    <!-- Reset Filtri -->
+                    <div style="display: flex; align-items: flex-end;">
+                        <button 
+                            onclick="resetFilters()" 
+                            style="width: 100%; padding: 10px; background: #f44336; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;"
+                        >
+                            🔄 Reset Filtri
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Contatore risultati -->
+                <div id="resultsCounter" style="margin-top: 15px; padding: 10px; background: white; border-radius: 8px; text-align: center; font-weight: 600; color: #667eea;">
+                    <!-- Popolato da JS -->
+                </div>
+            </div>
+            
             <div id="results">
                 <p style="color: #999; text-align: center;">Seleziona almeno 2 bookmaker o aggiungi URL personalizzati, poi clicca su "Analizza Quote"</p>
             </div>

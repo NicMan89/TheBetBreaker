@@ -158,6 +158,7 @@ const BONUSES = [
 // Array per memorizzare gli URL selezionati
 let urls = [];
 let selectedBookmakers = [];
+let allArbitrages = []; // Memorizza tutti gli arbitraggi per filtri/ordinamento
 
 // Funzione SHA-256 per hashare le password
 async function sha256(message) {
@@ -893,12 +894,17 @@ function generateArbitrageOpportunity() {
 // Mostra i risultati
 function displayResults(arbitrages) {
     const resultsDiv = document.getElementById('results');
+    const filtersSection = document.getElementById('filtersSection');
+    
+    // Salva tutti gli arbitraggi per filtri
+    allArbitrages = arbitrages;
     
     const dataSource = API_CONFIG.USE_REAL_DATA && API_CONFIG.ODDS_API_KEY 
         ? '📡 Quote Reali da The-Odds-API' 
         : '🎲 Dati Simulati (Demo)';
     
     if (arbitrages.length === 0) {
+        filtersSection.style.display = 'none';
         resultsDiv.innerHTML = `
             <div style="text-align: center; padding: 30px; color: #999;">
                 <div style="font-size: 48px; margin-bottom: 15px;">📊</div>
@@ -911,6 +917,101 @@ function displayResults(arbitrages) {
         return;
     }
     
+    // Mostra filtri se ci sono risultati
+    filtersSection.style.display = 'block';
+    
+    // Applica filtri e ordinamento iniziali
+    applySortAndFilter();
+}
+
+// Applica filtri e ordinamento
+function applySortAndFilter() {
+    const sortBy = document.getElementById('sortBy').value;
+    const filterSport = document.getElementById('filterSport').value;
+    const filterMinProfit = parseFloat(document.getElementById('filterMinProfit').value);
+    
+    // Copia array per non modificare originale
+    let filtered = [...allArbitrages];
+    
+    // Applica filtro sport
+    if (filterSport !== 'all') {
+        filtered = filtered.filter(arb => {
+            const sportLower = arb.sport.toLowerCase();
+            return sportLower.includes(filterSport.toLowerCase());
+        });
+    }
+    
+    // Applica filtro profitto minimo
+    if (filterMinProfit > 0) {
+        filtered = filtered.filter(arb => arb.profitPercentage >= filterMinProfit);
+    }
+    
+    // Applica ordinamento
+    switch(sortBy) {
+        case 'profit-desc':
+            filtered.sort((a, b) => b.profitPercentage - a.profitPercentage);
+            break;
+        case 'profit-asc':
+            filtered.sort((a, b) => a.profitPercentage - b.profitPercentage);
+            break;
+        case 'amount-desc':
+            filtered.sort((a, b) => b.profit - a.profit);
+            break;
+        case 'amount-asc':
+            filtered.sort((a, b) => a.profit - b.profit);
+            break;
+        case 'date-asc':
+            filtered.sort((a, b) => {
+                if (!a.commenceTime || !b.commenceTime) return 0;
+                return new Date(a.commenceTime) - new Date(b.commenceTime);
+            });
+            break;
+        case 'date-desc':
+            filtered.sort((a, b) => {
+                if (!a.commenceTime || !b.commenceTime) return 0;
+                return new Date(b.commenceTime) - new Date(a.commenceTime);
+            });
+            break;
+    }
+    
+    // Aggiorna contatore
+    updateResultsCounter(filtered.length, allArbitrages.length);
+    
+    // Mostra risultati filtrati
+    renderFilteredResults(filtered);
+}
+
+// Aggiorna contatore risultati
+function updateResultsCounter(filtered, total) {
+    const counterDiv = document.getElementById('resultsCounter');
+    
+    if (filtered === total) {
+        counterDiv.innerHTML = `Mostrando tutti i <strong>${total}</strong> ${total === 1 ? 'risultato' : 'risultati'}`;
+        counterDiv.style.color = '#667eea';
+    } else {
+        counterDiv.innerHTML = `Mostrando <strong>${filtered}</strong> di <strong>${total}</strong> ${total === 1 ? 'risultato' : 'risultati'}`;
+        counterDiv.style.color = '#f44336';
+    }
+}
+
+// Renderizza risultati filtrati
+function renderFilteredResults(arbitrages) {
+    const resultsDiv = document.getElementById('results');
+    const dataSource = API_CONFIG.USE_REAL_DATA && API_CONFIG.ODDS_API_KEY 
+        ? '📡 Quote Reali da The-Odds-API' 
+        : '🎲 Dati Simulati (Demo)';
+    
+    if (arbitrages.length === 0) {
+        resultsDiv.innerHTML = `
+            <div style="text-align: center; padding: 30px; color: #999;">
+                <div style="font-size: 48px; margin-bottom: 15px;">🔍</div>
+                <h3 style="margin-bottom: 10px; color: #666;">Nessun risultato con questi filtri</h3>
+                <p style="font-size: 14px;">Prova a modificare i filtri o clicca "Reset Filtri"</p>
+            </div>
+        `;
+        return;
+    }
+    
     resultsDiv.innerHTML = `
         <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #4caf50;">
             <strong style="color: #2e7d32;">✅ ${arbitrages.length} opportunità di arbitraggio ${arbitrages.length === 1 ? 'trovata' : 'trovate'}!</strong>
@@ -918,6 +1019,14 @@ function displayResults(arbitrages) {
         </div>
         ${arbitrages.map(arb => generateArbitrageHTML(arb)).join('')}
     `;
+}
+
+// Reset filtri
+function resetFilters() {
+    document.getElementById('sortBy').value = 'profit-desc';
+    document.getElementById('filterSport').value = 'all';
+    document.getElementById('filterMinProfit').value = '0';
+    applySortAndFilter();
 }
 
 // Genera HTML per una singola opportunità di arbitraggio
