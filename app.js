@@ -1029,6 +1029,382 @@ function resetFilters() {
     applySortAndFilter();
 }
 
+// ========================================
+// GESTIONE BONUS PERSONALI
+// ========================================
+
+// Switch tra sub-tabs bonus
+function switchBonusTab(tabName) {
+    // Hide all sections
+    document.getElementById('welcomeBonusSection').style.display = 'none';
+    document.getElementById('personalBonusSection').style.display = 'none';
+    
+    // Remove active from all buttons
+    document.getElementById('welcomeBonusBtn').classList.remove('active');
+    document.getElementById('personalBonusBtn').classList.remove('active');
+    
+    // Show selected section
+    if (tabName === 'welcome') {
+        document.getElementById('welcomeBonusSection').style.display = 'block';
+        document.getElementById('welcomeBonusBtn').classList.add('active');
+    } else {
+        document.getElementById('personalBonusSection').style.display = 'block';
+        document.getElementById('personalBonusBtn').classList.add('active');
+        renderPersonalBonuses();
+    }
+}
+
+// Aggiungi bonus personale
+function addPersonalBonus() {
+    const bookmaker = document.getElementById('newBonusBookmaker').value.trim();
+    const title = document.getElementById('newBonusTitle').value.trim();
+    const amount = document.getElementById('newBonusAmount').value.trim();
+    const type = document.getElementById('newBonusType').value.trim();
+    const conditions = document.getElementById('newBonusConditions').value.trim();
+    const expiry = document.getElementById('newBonusExpiry').value;
+    
+    if (!bookmaker || !title || !amount) {
+        alert('Compila almeno Bookmaker, Titolo e Importo');
+        return;
+    }
+    
+    const bonus = {
+        id: Date.now(),
+        bookmaker,
+        title,
+        amount,
+        type,
+        conditions,
+        expiry,
+        createdAt: new Date().toISOString()
+    };
+    
+    // Recupera bonus esistenti
+    const personalBonuses = JSON.parse(localStorage.getItem('personalBonuses') || '[]');
+    personalBonuses.push(bonus);
+    localStorage.setItem('personalBonuses', JSON.stringify(personalBonuses));
+    
+    // Reset form
+    document.getElementById('newBonusBookmaker').value = '';
+    document.getElementById('newBonusTitle').value = '';
+    document.getElementById('newBonusAmount').value = '';
+    document.getElementById('newBonusType').value = '';
+    document.getElementById('newBonusConditions').value = '';
+    document.getElementById('newBonusExpiry').value = '';
+    
+    // Refresh lista
+    renderPersonalBonuses();
+}
+
+// Rimuovi bonus personale
+function removePersonalBonus(id) {
+    if (!confirm('Vuoi eliminare questo bonus?')) return;
+    
+    let personalBonuses = JSON.parse(localStorage.getItem('personalBonuses') || '[]');
+    personalBonuses = personalBonuses.filter(b => b.id !== id);
+    localStorage.setItem('personalBonuses', JSON.stringify(personalBonuses));
+    
+    renderPersonalBonuses();
+}
+
+// Render bonus personali
+function renderPersonalBonuses() {
+    const personalBonuses = JSON.parse(localStorage.getItem('personalBonuses') || '[]');
+    const listDiv = document.getElementById('personalBonusesList');
+    
+    if (personalBonuses.length === 0) {
+        listDiv.innerHTML = `
+            <div style="text-align: center; padding: 30px; color: #999;">
+                <div style="font-size: 48px; margin-bottom: 15px;">📭</div>
+                <p>Nessun bonus personale aggiunto</p>
+                <p style="font-size: 12px; margin-top: 10px;">Usa il form sopra per aggiungere i tuoi bonus attivi</p>
+            </div>
+        `;
+        return;
+    }
+    
+    listDiv.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+            ${personalBonuses.map(bonus => `
+                <div class="bonus-card" style="position: relative;">
+                    <button onclick="removePersonalBonus(${bonus.id})" style="position: absolute; top: 10px; right: 10px; background: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">
+                        ✖
+                    </button>
+                    <div class="bonus-header">
+                        <h3>${bonus.bookmaker}</h3>
+                        <span class="bonus-amount">${bonus.amount}</span>
+                    </div>
+                    <div class="bonus-title">${bonus.title}</div>
+                    ${bonus.type ? `<div class="bonus-type">${bonus.type}</div>` : ''}
+                    ${bonus.conditions ? `
+                        <div class="bonus-conditions">
+                            <strong>Condizioni:</strong> ${bonus.conditions}
+                        </div>
+                    ` : ''}
+                    <div class="bonus-footer">
+                        <span class="bonus-validity">
+                            ${bonus.expiry ? `Scade: ${new Date(bonus.expiry).toLocaleDateString('it-IT')}` : 'Nessuna scadenza'}
+                        </span>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+// ========================================
+// CALCOLATORI
+// ========================================
+
+// Calcolatore Arbitraggio
+function calculateArbitrage() {
+    const odd1 = parseFloat(document.getElementById('arbOdd1').value);
+    const odd2 = parseFloat(document.getElementById('arbOdd2').value);
+    const budget = parseFloat(document.getElementById('arbBudget').value);
+    const resultDiv = document.getElementById('arbResult');
+    
+    if (!odd1 || !odd2 || !budget || odd1 <= 1 || odd2 <= 1 || budget <= 0) {
+        resultDiv.innerHTML = `<div style="color: #f44336; padding: 10px; background: #fee; border-radius: 8px;">Inserisci valori validi</div>`;
+        return;
+    }
+    
+    const inverseSum = (1 / odd1) + (1 / odd2);
+    
+    if (inverseSum >= 1) {
+        resultDiv.innerHTML = `
+            <div style="padding: 15px; background: #fee; border-radius: 8px; border-left: 4px solid #f44336;">
+                <strong style="color: #c33;">❌ Nessun Arbitraggio</strong>
+                <p style="margin-top: 8px; color: #666; font-size: 14px;">Somma inversi: ${inverseSum.toFixed(4)} ≥ 1</p>
+                <p style="font-size: 13px; color: #999; margin-top: 5px;">Serve somma < 1 per arbitraggio</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const profitPercentage = ((1 / inverseSum) - 1) * 100;
+    const stake1 = (budget / inverseSum) * (1 / odd1);
+    const stake2 = (budget / inverseSum) * (1 / odd2);
+    const profit = (stake1 * odd1) - budget;
+    
+    resultDiv.innerHTML = `
+        <div style="padding: 20px; background: linear-gradient(135deg, #4caf50 0%, #45a049 100%); border-radius: 12px; color: white;">
+            <h4 style="margin-bottom: 15px; font-size: 18px;">✅ Arbitraggio Trovato!</h4>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 8px;">
+                    <div style="font-size: 13px; opacity: 0.9;">Punta su Quota ${odd1}</div>
+                    <div style="font-size: 22px; font-weight: bold; margin-top: 5px;">€${stake1.toFixed(2)}</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 8px;">
+                    <div style="font-size: 13px; opacity: 0.9;">Punta su Quota ${odd2}</div>
+                    <div style="font-size: 22px; font-weight: bold; margin-top: 5px;">€${stake2.toFixed(2)}</div>
+                </div>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.25); padding: 15px; border-radius: 8px;">
+                <div style="font-size: 14px; opacity: 0.9;">💰 Profitto Garantito</div>
+                <div style="font-size: 28px; font-weight: bold; margin-top: 5px;">+€${profit.toFixed(2)} (${profitPercentage.toFixed(2)}%)</div>
+            </div>
+        </div>
+    `;
+}
+
+// Calcolatore Estrazione Bonus
+function calculateBonusExtraction() {
+    const bonusAmount = parseFloat(document.getElementById('bonusAmount').value);
+    const rollover = parseFloat(document.getElementById('rollover').value);
+    const avgOdds = parseFloat(document.getElementById('avgOdds').value);
+    const resultDiv = document.getElementById('bonusResult');
+    
+    if (!bonusAmount || !rollover || !avgOdds || bonusAmount <= 0 || rollover <= 0 || avgOdds <= 1) {
+        resultDiv.innerHTML = `<div style="color: #f44336; padding: 10px; background: #fee; border-radius: 8px;">Inserisci valori validi</div>`;
+        return;
+    }
+    
+    // Formula estrazione bonus
+    // Profitto teorico = Bonus * (1 - (1/avgOdds)^rollover)
+    const theoreticalProfit = bonusAmount * (1 - Math.pow(1 / avgOdds, rollover));
+    const totalTurnover = bonusAmount * rollover;
+    const qualifyingLoss = bonusAmount - theoreticalProfit;
+    const extractionRate = (theoreticalProfit / bonusAmount) * 100;
+    
+    resultDiv.innerHTML = `
+        <div style="padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white;">
+            <h4 style="margin-bottom: 15px; font-size: 18px;">🎁 Analisi Estrazione Bonus</h4>
+            
+            <div style="display: grid; gap: 12px;">
+                <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 8px;">
+                    <div style="font-size: 13px; opacity: 0.9;">Turnover Richiesto</div>
+                    <div style="font-size: 20px; font-weight: bold; margin-top: 5px;">€${totalTurnover.toFixed(2)}</div>
+                    <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">(€${bonusAmount} × ${rollover}x)</div>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 8px;">
+                    <div style="font-size: 13px; opacity: 0.9;">Profitto Stimato</div>
+                    <div style="font-size: 20px; font-weight: bold; margin-top: 5px;">€${theoreticalProfit.toFixed(2)}</div>
+                    <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">(${extractionRate.toFixed(1)}% del bonus)</div>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 8px;">
+                    <div style="font-size: 13px; opacity: 0.9;">Perdita Qualificante</div>
+                    <div style="font-size: 20px; font-weight: bold; margin-top: 5px;">€${qualifyingLoss.toFixed(2)}</div>
+                    <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">(costo per ottenere bonus)</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 8px; font-size: 13px;">
+                <strong>📝 Note:</strong> Calcolo teorico con quota media ${avgOdds}. Risultati reali possono variare.
+            </div>
+        </div>
+    `;
+}
+
+// Calcolatore Kelly Criterion
+function calculateKelly() {
+    const prob = parseFloat(document.getElementById('kellyProb').value) / 100; // Converti % in decimale
+    const odds = parseFloat(document.getElementById('kellyOdds').value);
+    const bankroll = parseFloat(document.getElementById('kellyBankroll').value);
+    const resultDiv = document.getElementById('kellyResult');
+    
+    if (!prob || !odds || !bankroll || prob <= 0 || prob >= 1 || odds <= 1 || bankroll <= 0) {
+        resultDiv.innerHTML = `<div style="color: #f44336; padding: 10px; background: #fee; border-radius: 8px;">Inserisci valori validi (probabilità tra 0-100%)</div>`;
+        return;
+    }
+    
+    // Formula Kelly: f = (bp - q) / b
+    // dove b = odds - 1, p = probabilità, q = 1 - p
+    const b = odds - 1;
+    const q = 1 - prob;
+    const kellyFraction = (b * prob - q) / b;
+    
+    if (kellyFraction <= 0) {
+        resultDiv.innerHTML = `
+            <div style="padding: 15px; background: #fee; border-radius: 8px; border-left: 4px solid #f44336;">
+                <strong style="color: #c33;">❌ Scommessa Non Vantaggiosa</strong>
+                <p style="margin-top: 8px; color: #666; font-size: 14px;">Kelly Criterion: ${(kellyFraction * 100).toFixed(2)}%</p>
+                <p style="font-size: 13px; color: #999; margin-top: 5px;">La probabilità è troppo bassa rispetto alla quota. Non puntare.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const kellyStake = bankroll * kellyFraction;
+    const halfKelly = kellyStake / 2;
+    const quarterKelly = kellyStake / 4;
+    const potentialWin = kellyStake * odds;
+    const potentialProfit = potentialWin - kellyStake;
+    
+    resultDiv.innerHTML = `
+        <div style="padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white;">
+            <h4 style="margin-bottom: 15px; font-size: 18px;">📊 Kelly Criterion</h4>
+            
+            <div style="display: grid; gap: 12px;">
+                <div style="background: rgba(255,255,255,0.25); padding: 15px; border-radius: 8px;">
+                    <div style="font-size: 13px; opacity: 0.9;">Kelly Fraction</div>
+                    <div style="font-size: 24px; font-weight: bold; margin-top: 5px;">${(kellyFraction * 100).toFixed(2)}%</div>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 8px;">
+                    <div style="font-size: 13px; opacity: 0.9;">Full Kelly (aggressivo)</div>
+                    <div style="font-size: 20px; font-weight: bold; margin-top: 5px;">€${kellyStake.toFixed(2)}</div>
+                    <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">Vincita potenziale: €${potentialProfit.toFixed(2)}</div>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 8px;">
+                    <div style="font-size: 13px; opacity: 0.9;">Half Kelly (consigliato)</div>
+                    <div style="font-size: 20px; font-weight: bold; margin-top: 5px;">€${halfKelly.toFixed(2)}</div>
+                    <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">Riduce volatilità</div>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 8px;">
+                    <div style="font-size: 13px; opacity: 0.9;">Quarter Kelly (conservativo)</div>
+                    <div style="font-size: 20px; font-weight: bold; margin-top: 5px;">€${quarterKelly.toFixed(2)}</div>
+                    <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">Massima sicurezza</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 8px; font-size: 13px;">
+                <strong>📝 Consiglio:</strong> Usa Half o Quarter Kelly per ridurre rischio.
+            </div>
+        </div>
+    `;
+}
+
+// Calcolatore Matched Betting
+function calculateMatched() {
+    const backOdds = parseFloat(document.getElementById('backOdds').value);
+    const layOdds = parseFloat(document.getElementById('layOdds').value);
+    const backStake = parseFloat(document.getElementById('backStake').value);
+    const commission = parseFloat(document.getElementById('commission').value) / 100;
+    const resultDiv = document.getElementById('matchedResult');
+    
+    if (!backOdds || !layOdds || !backStake || !commission === undefined || backOdds <= 1 || layOdds <= 1 || backStake <= 0) {
+        resultDiv.innerHTML = `<div style="color: #f44336; padding: 10px; background: #fee; border-radius: 8px;">Inserisci valori validi</div>`;
+        return;
+    }
+    
+    // Calcolo puntata lay
+    const layStake = (backStake * backOdds) / layOdds;
+    
+    // Calcolo liability (responsabilità exchange)
+    const liability = layStake * (layOdds - 1);
+    
+    // Calcolo profitti scenari
+    const backWins = backStake * (backOdds - 1) - liability;
+    const layWins = (layStake * (1 - commission)) - backStake;
+    
+    // Perdita qualificante
+    const qualifyingLoss = Math.abs(backWins + layWins) / 2;
+    
+    resultDiv.innerHTML = `
+        <div style="padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white;">
+            <h4 style="margin-bottom: 15px; font-size: 18px;">🎯 Matched Betting</h4>
+            
+            <div style="display: grid; gap: 12px; margin-bottom: 15px;">
+                <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 8px;">
+                    <div style="font-size: 13px; opacity: 0.9;">Puntata Back (Bookmaker)</div>
+                    <div style="font-size: 20px; font-weight: bold; margin-top: 5px;">€${backStake.toFixed(2)}</div>
+                    <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">Quota: ${backOdds}</div>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 8px;">
+                    <div style="font-size: 13px; opacity: 0.9;">Puntata Lay (Exchange)</div>
+                    <div style="font-size: 20px; font-weight: bold; margin-top: 5px;">€${layStake.toFixed(2)}</div>
+                    <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">Quota: ${layOdds} | Liability: €${liability.toFixed(2)}</div>
+                </div>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.25); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 10px;"><strong>Scenari:</strong></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <div style="font-size: 12px; opacity: 0.8;">Se Back Vince:</div>
+                        <div style="font-size: 18px; font-weight: bold; color: ${backWins >= 0 ? '#4caf50' : '#f44336'};">
+                            ${backWins >= 0 ? '+' : ''}€${backWins.toFixed(2)}
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; opacity: 0.8;">Se Lay Vince:</div>
+                        <div style="font-size: 18px; font-weight: bold; color: ${layWins >= 0 ? '#4caf50' : '#f44336'};">
+                            ${layWins >= 0 ? '+' : ''}€${layWins.toFixed(2)}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 8px;">
+                <div style="font-size: 13px; opacity: 0.9;">Perdita Qualificante (media)</div>
+                <div style="font-size: 20px; font-weight: bold; margin-top: 5px;">€${qualifyingLoss.toFixed(2)}</div>
+                <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">Costo per sbloccare bonus</div>
+            </div>
+            
+            <div style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 8px; font-size: 13px;">
+                <strong>📝 Note:</strong> Commissione exchange ${(commission * 100).toFixed(1)}% già applicata.
+            </div>
+        </div>
+    `;
+}
+
 // Genera HTML per una singola opportunità di arbitraggio
 function generateArbitrageHTML(arb) {
     // Formatta data evento se disponibile

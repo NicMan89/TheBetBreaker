@@ -554,6 +554,42 @@
         .custom-url {
             border-left: 4px solid #764ba2;
         }
+
+        /* Sub-tabs for bonus */
+        .sub-tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .sub-tab-btn:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .sub-tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        /* Calculator sections */
+        .calculator-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .calculator-section:last-child {
+            margin-bottom: 0;
+        }
     </style>
 </head>
 <body>
@@ -597,7 +633,10 @@
                 🔗 URL Personalizzati
             </button>
             <button class="tab-btn" onclick="switchTab('bonuses')">
-                🎁 Bonus Attivi
+                🎁 Bonus
+            </button>
+            <button class="tab-btn" onclick="switchTab('calculators')">
+                🧮 Calcolatori
             </button>
             <button class="tab-btn" onclick="switchTab('settings')">
                 ⚙️ Impostazioni
@@ -634,12 +673,203 @@
         <!-- Tab: Bonuses -->
         <div id="bonusesTab" class="tab-content">
             <div class="card">
-                <h2>🎁 Bonus Benvenuto Attivi</h2>
+                <h2>🎁 Gestione Bonus</h2>
+                
+                <!-- Sub-tabs per bonus -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0;">
+                    <button class="sub-tab-btn active" onclick="switchBonusTab('welcome')" id="welcomeBonusBtn">
+                        🎉 Bonus Benvenuto
+                    </button>
+                    <button class="sub-tab-btn" onclick="switchBonusTab('personal')" id="personalBonusBtn">
+                        ⭐ I Miei Bonus
+                    </button>
+                </div>
+                
+                <!-- Bonus Benvenuto -->
+                <div id="welcomeBonusSection">
+                    <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
+                        Bonus benvenuto dei principali bookmaker. Solo per nuovi utenti.
+                    </p>
+                    <div class="bonuses-list" id="bonusesList">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+                
+                <!-- I Miei Bonus Personali -->
+                <div id="personalBonusSection" style="display: none;">
+                    <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
+                        Gestisci i tuoi bonus attivi. Aggiungi manualmente i bonus che trovi sui siti.
+                    </p>
+                    
+                    <!-- Form aggiungi bonus -->
+                    <div style="background: white; padding: 20px; border-radius: 12px; border: 2px solid #e0e0e0; margin-bottom: 20px;">
+                        <h3 style="margin-bottom: 15px; font-size: 16px;">➕ Aggiungi Nuovo Bonus</h3>
+                        
+                        <div style="display: grid; gap: 15px;">
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Bookmaker:</label>
+                                <input type="text" id="newBonusBookmaker" placeholder="es: Bet365" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Titolo:</label>
+                                <input type="text" id="newBonusTitle" placeholder="es: Bonus Ricarica Settimanale" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Importo:</label>
+                                    <input type="text" id="newBonusAmount" placeholder="es: €50" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                                </div>
+                                
+                                <div>
+                                    <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Tipo:</label>
+                                    <input type="text" id="newBonusType" placeholder="es: 50% fino a €50" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Condizioni:</label>
+                                <textarea id="newBonusConditions" placeholder="es: Rollover 3x su quote min 1.50" rows="2" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; resize: vertical;"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Scadenza:</label>
+                                <input type="date" id="newBonusExpiry" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                            </div>
+                            
+                            <button onclick="addPersonalBonus()" style="width: 100%; padding: 12px; background: #4caf50; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
+                                ➕ Aggiungi Bonus
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Lista bonus personali -->
+                    <div id="personalBonusesList">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Calculators -->
+        <div id="calculatorsTab" class="tab-content">
+            <div class="card">
+                <h2>🧮 Calcolatori Matched Betting</h2>
                 <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
-                    Bonus attuali dei principali bookmaker. Verifica sempre i termini e condizioni sul sito ufficiale.
+                    Strumenti per calcolare puntate e profitti ottimali.
                 </p>
-                <div class="bonuses-list" id="bonusesList">
-                    <!-- Populated by JS -->
+                
+                <!-- Calcolatore Arbitraggio -->
+                <div class="calculator-section">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">💎 Calcolatore Arbitraggio</h3>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Calcola quanto puntare su ogni quota per profitto garantito.</p>
+                    
+                    <div style="background: white; padding: 20px; border-radius: 12px; border: 2px solid #e0e0e0;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Quota 1:</label>
+                                <input type="number" id="arbOdd1" step="0.01" placeholder="2.10" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Quota 2:</label>
+                                <input type="number" id="arbOdd2" step="0.01" placeholder="2.50" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Budget Totale (€):</label>
+                                <input type="number" id="arbBudget" placeholder="100" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                            </div>
+                        </div>
+                        <button onclick="calculateArbitrage()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                            🔍 Calcola
+                        </button>
+                        <div id="arbResult" style="margin-top: 15px;"></div>
+                    </div>
+                </div>
+                
+                <!-- Calcolatore Estrazione Bonus -->
+                <div class="calculator-section">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">🎁 Calcolatore Estrazione Bonus</h3>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Calcola quanto puoi estrarre da un bonus con rollover.</p>
+                    
+                    <div style="background: white; padding: 20px; border-radius: 12px; border: 2px solid #e0e0e0;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Importo Bonus (€):</label>
+                                <input type="number" id="bonusAmount" placeholder="100" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Rollover (x):</label>
+                                <input type="number" id="rollover" placeholder="3" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Quota Media:</label>
+                                <input type="number" id="avgOdds" step="0.01" value="1.80" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                            </div>
+                        </div>
+                        <button onclick="calculateBonusExtraction()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                            🔍 Calcola
+                        </button>
+                        <div id="bonusResult" style="margin-top: 15px;"></div>
+                    </div>
+                </div>
+                
+                <!-- Calcolatore Kelly -->
+                <div class="calculator-section">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">📊 Calcolatore Kelly Criterion</h3>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Calcola la puntata ottimale basata sulla probabilità di vincita.</p>
+                    
+                    <div style="background: white; padding: 20px; border-radius: 12px; border: 2px solid #e0e0e0;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Probabilità (%):</label>
+                                <input type="number" id="kellyProb" step="0.01" min="0" max="100" placeholder="55" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Quota:</label>
+                                <input type="number" id="kellyOdds" step="0.01" placeholder="2.00" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Bankroll (€):</label>
+                                <input type="number" id="kellyBankroll" placeholder="1000" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                            </div>
+                        </div>
+                        <button onclick="calculateKelly()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                            🔍 Calcola
+                        </button>
+                        <div id="kellyResult" style="margin-top: 15px;"></div>
+                    </div>
+                </div>
+                
+                <!-- Calcolatore Matched Betting -->
+                <div class="calculator-section">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">🎯 Calcolatore Matched Betting</h3>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Calcola puntata e lay per matched betting (back + lay).</p>
+                    
+                    <div style="background: white; padding: 20px; border-radius: 12px; border: 2px solid #e0e0e0;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Quota Back:</label>
+                                <input type="number" id="backOdds" step="0.01" placeholder="2.50" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Quota Lay:</label>
+                                <input type="number" id="layOdds" step="0.01" placeholder="2.60" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Puntata Back (€):</label>
+                                <input type="number" id="backStake" placeholder="100" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Commissione (%):</label>
+                                <input type="number" id="commission" step="0.1" value="2" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                            </div>
+                        </div>
+                        <button onclick="calculateMatched()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                            🔍 Calcola
+                        </button>
+                        <div id="matchedResult" style="margin-top: 15px;"></div>
+                    </div>
                 </div>
             </div>
         </div>
