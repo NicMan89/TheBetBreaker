@@ -1,12 +1,13 @@
-// Credenziali hardcoded (modifica queste)
+// Credenziali (hash SHA-256 delle password)
+// Username: NicMan89, Davide
 const USERS = {
-    'NicMan89': 'CR7',
-    'Davide': 'DavideM_001'
+    'NicMan89': '774e797343ecca2d15f4055c809c7f3449c391cf2580f704e6c7abcaf9fdf765', // Hash di password
+    'Davide': 'eacc0d256abdfb52314d28592fd9cb8ce8e06dbae1c519ca3a258b1c2973c831'    // Hash di password
 };
 
 // API Configuration (per quote reali)
 const API_CONFIG = {
-    ODDS_API_KEY: '1747c23c4226411b632e76e5e376958d', // Inserisci la tua key da https://the-odds-api.com (500 req/mese gratis)
+    ODDS_API_KEY: '', // Inserisci la tua key da https://the-odds-api.com (500 req/mese gratis)
     ODDS_API_URL: 'https://api.the-odds-api.com/v4',
     USE_REAL_DATA: false // Imposta true quando hai configurato l'API key
 };
@@ -158,14 +159,26 @@ const BONUSES = [
 let urls = [];
 let selectedBookmakers = [];
 
+// Funzione SHA-256 per hashare le password
+async function sha256(message) {
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+}
+
 // Login handler
-document.getElementById('loginForm')?.addEventListener('submit', function(e) {
+document.getElementById('loginForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     
-    if (USERS[username] && USERS[username] === password) {
+    // Hash della password inserita
+    const passwordHash = await sha256(password);
+    
+    if (USERS[username] && USERS[username] === passwordHash) {
         // Login successful
         sessionStorage.setItem('loggedIn', 'true');
         sessionStorage.setItem('username', username);
