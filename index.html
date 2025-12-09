@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Arbitrage Analyzer</title>
     <style>
         * {
@@ -589,6 +589,174 @@
 
         .calculator-section:last-child {
             margin-bottom: 0;
+        }
+
+        /* Link bookmaker nelle card arbitraggio */
+        .bookmaker-link {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.25);
+            color: white !important;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .bookmaker-link:hover {
+            background: rgba(255,255,255,0.35);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .bookmaker-link:active {
+            transform: translateY(0);
+        }
+
+        /* ===== MOBILE RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 24px;
+                padding: 15px;
+            }
+
+            .card {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .tab-btn {
+                padding: 10px 12px;
+                font-size: 13px;
+                flex: 1 1 auto;
+                min-width: 100px;
+            }
+
+            .badge {
+                font-size: 10px;
+                padding: 2px 6px;
+            }
+
+            /* Grid bookmaker 1 colonna su mobile */
+            .bookmakers-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Bonus 1 colonna */
+            .bonuses-list {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Filtri impilati verticalmente */
+            #filtersSection > div:first-child {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* URL items più grandi per touch */
+            .url-item {
+                padding: 15px;
+                font-size: 14px;
+            }
+
+            /* Bottoni più grandi per touch */
+            button {
+                min-height: 44px; /* iOS touch target size */
+                padding: 12px 20px;
+            }
+
+            .analyze-btn {
+                font-size: 16px;
+                padding: 15px;
+            }
+
+            /* Arbitrage cards più leggibili */
+            .arbitrage-opportunity {
+                padding: 15px;
+            }
+
+            .arbitrage-opportunity h3 {
+                font-size: 16px;
+            }
+
+            .odds-comparison {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .odd-item {
+                padding: 15px;
+            }
+
+            /* Calcolatori stack verticale */
+            .calculator-section > div:first-of-type > div {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Input più grandi */
+            input, select, textarea {
+                font-size: 16px !important; /* Previene zoom iOS */
+                padding: 12px !important;
+            }
+
+            /* Bonus form 1 colonna */
+            #personalBonusSection > div:first-child > div {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Sub-tabs più piccoli */
+            .sub-tab-btn {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            /* Logout button */
+            .logout-btn {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+
+            /* Link bookmaker più grandi su mobile */
+            .bookmaker-link {
+                display: block;
+                margin: 8px 0 0 0;
+                padding: 10px 15px;
+                font-size: 13px;
+                text-align: center;
+            }
+
+            /* Bookmaker name wrap su mobile */
+            .bookmaker {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* Tablet (768px - 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .bookmakers-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            .bonuses-list {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            #filtersSection > div:first-child {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
         }
     </style>
 </head>

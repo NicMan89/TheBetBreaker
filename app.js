@@ -16,6 +16,7 @@ const API_CONFIG = {
 const BOOKMAKERS = {
     'bet365': {
         name: 'Bet365',
+        apiKey: 'bet365', // Key usata da The-Odds-API
         urls: {
             calcio: 'https://www.bet365.it/#/AC/B1/C1/D8/E187160/F8/',
             tennis: 'https://www.bet365.it/#/AC/B2/C1/D8/E187161/F8/',
@@ -25,6 +26,7 @@ const BOOKMAKERS = {
     },
     'snai': {
         name: 'SNAI',
+        apiKey: 'snai', // Non sempre nell'API
         urls: {
             calcio: 'https://www.snai.it/sport/calcio',
             tennis: 'https://www.snai.it/sport/tennis',
@@ -34,6 +36,7 @@ const BOOKMAKERS = {
     },
     'sisal': {
         name: 'Sisal',
+        apiKey: 'sisal',
         urls: {
             calcio: 'https://www.sisal.it/scommesse/sport/calcio',
             tennis: 'https://www.sisal.it/scommesse/sport/tennis',
@@ -43,6 +46,7 @@ const BOOKMAKERS = {
     },
     'eurobet': {
         name: 'Eurobet',
+        apiKey: 'eurobet',
         urls: {
             calcio: 'https://www.eurobet.it/it/scommesse/calcio/',
             tennis: 'https://www.eurobet.it/it/scommesse/tennis/',
@@ -52,6 +56,7 @@ const BOOKMAKERS = {
     },
     'williamhill': {
         name: 'William Hill',
+        apiKey: 'williamhill',
         urls: {
             calcio: 'https://sports.williamhill.it/betting/it-it/calcio',
             tennis: 'https://sports.williamhill.it/betting/it-it/tennis',
@@ -61,6 +66,7 @@ const BOOKMAKERS = {
     },
     'betfair': {
         name: 'Betfair',
+        apiKey: 'betfair_ex_eu',
         urls: {
             calcio: 'https://www.betfair.it/sport/calcio',
             tennis: 'https://www.betfair.it/sport/tennis',
@@ -70,6 +76,7 @@ const BOOKMAKERS = {
     },
     'lottomatica': {
         name: 'Lottomatica',
+        apiKey: 'lottomatica',
         urls: {
             calcio: 'https://www.lottomatica.it/scommesse/calcio',
             tennis: 'https://www.lottomatica.it/scommesse/tennis',
@@ -79,12 +86,53 @@ const BOOKMAKERS = {
     },
     'goldbet': {
         name: 'GoldBet',
+        apiKey: 'goldbet',
         urls: {
             calcio: 'https://www.goldbet.it/scommesse/calcio',
             tennis: 'https://www.goldbet.it/scommesse/tennis',
             basket: 'https://www.goldbet.it/scommesse/basket'
         },
         color: '#F9A825'
+    },
+    'unibet': {
+        name: 'Unibet',
+        apiKey: 'unibet',
+        urls: {
+            calcio: 'https://www.unibet.it/scommesse/calcio',
+            tennis: 'https://www.unibet.it/scommesse/tennis',
+            basket: 'https://www.unibet.it/scommesse/basket'
+        },
+        color: '#00B050'
+    },
+    'pinnacle': {
+        name: 'Pinnacle',
+        apiKey: 'pinnacle',
+        urls: {
+            calcio: 'https://www.pinnacle.com/en/soccer/',
+            tennis: 'https://www.pinnacle.com/en/tennis/',
+            basket: 'https://www.pinnacle.com/en/basketball/'
+        },
+        color: '#E74C3C'
+    },
+    '888sport': {
+        name: '888sport',
+        apiKey: '888sport',
+        urls: {
+            calcio: 'https://www.888sport.it/calcio/',
+            tennis: 'https://www.888sport.it/tennis/',
+            basket: 'https://www.888sport.it/basket/'
+        },
+        color: '#00A8E1'
+    },
+    'marathonbet': {
+        name: 'Marathon Bet',
+        apiKey: 'marathon',
+        urls: {
+            calcio: 'https://www.marathonbet.it/it/betting/Football.htm',
+            tennis: 'https://www.marathonbet.it/it/betting/Tennis.htm',
+            basket: 'https://www.marathonbet.it/it/betting/Basketball.htm'
+        },
+        color: '#1C4587'
     }
 };
 
@@ -704,12 +752,31 @@ function parseRealOdds(event) {
 function calculateArbitrages(oddsData) {
     const arbitrages = [];
     
+    // Crea set di apiKey dei bookmaker selezionati
+    const selectedBookmakerKeys = selectedBookmakers.map(key => BOOKMAKERS[key].apiKey.toLowerCase());
+    
+    console.log('Bookmaker selezionati:', selectedBookmakers);
+    console.log('API keys da filtrare:', selectedBookmakerKeys);
+    
     for (const event of oddsData) {
-        // Cerca arbitraggi tra ogni coppia di bookmaker
-        for (let i = 0; i < event.bookmakerOdds.length; i++) {
-            for (let j = i + 1; j < event.bookmakerOdds.length; j++) {
-                const book1 = event.bookmakerOdds[i];
-                const book2 = event.bookmakerOdds[j];
+        // Filtra solo bookmaker selezionati dall'utente
+        const filteredBookmakers = event.bookmakerOdds.filter(bookOdd => {
+            const bookKey = bookOdd.bookmaker.toLowerCase().replace(/\s+/g, '');
+            return selectedBookmakerKeys.some(selectedKey => 
+                bookKey.includes(selectedKey) || selectedKey.includes(bookKey)
+            );
+        });
+        
+        // Salta se non ci sono almeno 2 bookmaker selezionati per questo evento
+        if (filteredBookmakers.length < 2) {
+            continue;
+        }
+        
+        // Cerca arbitraggi tra ogni coppia di bookmaker SELEZIONATI
+        for (let i = 0; i < filteredBookmakers.length; i++) {
+            for (let j = i + 1; j < filteredBookmakers.length; j++) {
+                const book1 = filteredBookmakers[i];
+                const book2 = filteredBookmakers[j];
                 
                 // Prova combinazione: Home da book1, Away da book2
                 let arb = checkArbitrage(
@@ -739,6 +806,8 @@ function calculateArbitrages(oddsData) {
             }
         }
     }
+    
+    console.log(`Trovati ${arbitrages.length} arbitraggi tra bookmaker selezionati`);
     
     // Ordina per profitto decrescente
     return arbitrages.sort((a, b) => b.profitPercentage - a.profitPercentage);
@@ -1421,20 +1490,66 @@ function generateArbitrageHTML(arb) {
         eventTimeHtml = `<div style="font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 5px;">📅 ${dateStr}</div>`;
     }
     
+    // Warning per arbitraggi sospetti (>10%)
+    let warningHtml = '';
+    if (arb.profitPercentage > 10) {
+        warningHtml = `
+            <div style="background: rgba(255, 152, 0, 0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #ff9800;">
+                <strong style="color: #fff; font-size: 14px;">⚠️ ATTENZIONE: Arbitraggio Sospetto</strong>
+                <p style="font-size: 12px; color: rgba(255,255,255,0.9); margin-top: 5px; margin-bottom: 0;">
+                    Profitto ${arb.profitPercentage}% è molto alto. Possibili cause:<br>
+                    • Quote errate o non aggiornate<br>
+                    • Mercati diversi non comparabili<br>
+                    • Errore dati API<br>
+                    <strong>Verifica SEMPRE le quote sui siti ufficiali prima di puntare!</strong>
+                </p>
+            </div>
+        `;
+    }
+    
+    // Trova URL bookmaker (prova a matchare con nome bookmaker)
+    function getBookmakerUrl(bookmakerName) {
+        const normalized = bookmakerName.toLowerCase().replace(/\s+/g, '').replace(/_/g, '');
+        
+        // Cerca nel dizionario BOOKMAKERS
+        for (const [key, value] of Object.entries(BOOKMAKERS)) {
+            const bookKey = key.toLowerCase();
+            const apiKey = value.apiKey.toLowerCase().replace(/_/g, '');
+            
+            if (normalized.includes(bookKey) || normalized.includes(apiKey) || 
+                bookKey.includes(normalized) || apiKey.includes(normalized)) {
+                // Restituisci URL calcio come default
+                return value.urls.calcio;
+            }
+        }
+        
+        return null;
+    }
+    
+    const url1 = getBookmakerUrl(arb.bookmaker1);
+    const url2 = getBookmakerUrl(arb.bookmaker2);
+    
     return `
         <div class="arbitrage-opportunity">
             <h3>🏆 ${arb.sport}: ${arb.event}</h3>
             ${eventTimeHtml}
+            ${warningHtml}
             
             <div class="odds-comparison">
                 <div class="odd-item">
-                    <div class="bookmaker">${arb.bookmaker1}</div>
+                    <div class="bookmaker">
+                        ${arb.bookmaker1}
+                        ${url1 ? `<a href="${url1}" target="_blank" rel="noopener noreferrer" class="bookmaker-link">🔗 Apri Sito</a>` : ''}
+                    </div>
                     <div class="value">${arb.odd1}</div>
                     <div style="font-size: 12px; margin-top: 5px;">${arb.outcome1}</div>
                     <div style="font-size: 12px; margin-top: 5px;">Punta: €${arb.stake1}</div>
                 </div>
                 <div class="odd-item">
-                    <div class="bookmaker">${arb.bookmaker2}</div>
+                    <div class="bookmaker">
+                        ${arb.bookmaker2}
+                        ${url2 ? `<a href="${url2}" target="_blank" rel="noopener noreferrer" class="bookmaker-link">🔗 Apri Sito</a>` : ''}
+                    </div>
                     <div class="value">${arb.odd2}</div>
                     <div style="font-size: 12px; margin-top: 5px;">${arb.outcome2}</div>
                     <div style="font-size: 12px; margin-top: 5px;">Punta: €${arb.stake2}</div>
@@ -1451,8 +1566,8 @@ function generateArbitrageHTML(arb) {
             
             <div style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 8px; font-size: 13px;">
                 <strong>📝 Come procedere:</strong><br>
-                1. Punta €${arb.stake1} su "${arb.outcome1}" su ${arb.bookmaker1}<br>
-                2. Punta €${arb.stake2} su "${arb.outcome2}" su ${arb.bookmaker2}<br>
+                1. ${url1 ? `<a href="${url1}" target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: underline;">Apri ${arb.bookmaker1}</a> e ` : ''}Punta €${arb.stake1} su "${arb.outcome1}"<br>
+                2. ${url2 ? `<a href="${url2}" target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: underline;">Apri ${arb.bookmaker2}</a> e ` : ''}Punta €${arb.stake2} su "${arb.outcome2}"<br>
                 3. Profitto garantito: €${arb.profit} indipendentemente dal risultato!
             </div>
         </div>
