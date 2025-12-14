@@ -2,8 +2,8 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Arbitrage Analyzer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arbitrage Analyzer v2.7 - Over/Under Edition</title>
     <style>
         * {
             margin: 0;
@@ -12,467 +12,444 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
         }
 
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 500px;
-            width: 100%;
+        /* LOGIN SCREEN */
+        #loginScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
             padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
         }
 
-        .logo {
+        .login-container h1 {
             text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo h1 {
             color: #667eea;
-            font-size: 32px;
             margin-bottom: 10px;
+            font-size: 28px;
         }
 
-        .logo p {
-            color: #666;
-            font-size: 14px;
+        .version-badge {
+            text-align: center;
+            color: #764ba2;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            padding: 5px 15px;
+            background: rgba(118, 75, 162, 0.1);
+            border-radius: 20px;
+            display: inline-block;
+            width: 100%;
         }
 
-        .form-group {
+        .input-group {
             margin-bottom: 20px;
         }
 
-        label {
+        .input-group label {
             display: block;
-            color: #333;
-            font-weight: 600;
             margin-bottom: 8px;
-            font-size: 14px;
+            color: #333;
+            font-weight: 500;
         }
 
-        input[type="text"],
-        input[type="password"] {
+        .input-group input {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
         }
 
-        input[type="text"]:focus,
-        input[type="password"]:focus {
+        .input-group input:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .btn {
+        .btn-login {
             width: 100%;
             padding: 14px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s;
         }
 
-        .btn:hover {
+        .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
         }
 
-        .btn:active {
+        .btn-login:active {
             transform: translateY(0);
         }
 
-        .error {
-            background: #fee;
-            color: #c33;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid #c33;
+        /* MAIN APP */
+        #mainApp {
             display: none;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 24px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .btn-logout {
+            padding: 8px 20px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #d32f2f;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            min-height: 500px;
         }
 
         .hidden {
             display: none;
         }
 
-        /* Dashboard Styles */
-        .dashboard {
-            max-width: 1200px;
-        }
-
-        .dashboard-header {
+        /* BOOKMAKERS SECTION */
+        .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
         }
 
-        .welcome {
+        .section-header h2 {
             color: #333;
-            font-size: 24px;
-            font-weight: 600;
+            font-size: 22px;
         }
 
-        .logout-btn {
-            padding: 10px 20px;
-            background: #f44336;
+        .selected-count {
+            background: #4CAF50;
             color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .logout-btn:hover {
-            background: #d32f2f;
-            transform: translateY(-2px);
-        }
-
-        .card {
-            background: #f9f9f9;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 2px solid #e0e0e0;
-        }
-
-        .card h2 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 20px;
-        }
-
-        .url-input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .url-input-group input {
-            flex: 1;
-        }
-
-        .add-url-btn {
-            padding: 12px 25px;
-            background: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .add-url-btn:hover {
-            background: #45a049;
-        }
-
-        .url-list {
-            margin-top: 20px;
-        }
-
-        .url-item {
-            background: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #e0e0e0;
-        }
-
-        .url-item span {
-            color: #666;
+            padding: 8px 16px;
+            border-radius: 20px;
             font-size: 14px;
-            word-break: break-all;
-            flex: 1;
-            margin-right: 10px;
-        }
-
-        .remove-btn {
-            background: #f44336;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
             font-weight: 600;
         }
 
-        .remove-btn:hover {
-            background: #d32f2f;
-        }
-
-        .analyze-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .analyze-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .analyze-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .results {
-            margin-top: 20px;
-        }
-
-        .arbitrage-opportunity {
-            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
-        }
-
-        .arbitrage-opportunity h3 {
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-
-        .odds-comparison {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-            margin: 15px 0;
-        }
-
-        .odd-item {
-            background: rgba(255,255,255,0.2);
-            padding: 12px;
-            border-radius: 8px;
-        }
-
-        .odd-item .bookmaker {
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-
-        .odd-item .value {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .profit-info {
-            background: rgba(255,255,255,0.2);
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-
-        .profit-info .label {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .profit-info .value {
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #667eea;
-            font-weight: 600;
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .info-box {
-            background: #e3f2fd;
-            border-left: 4px solid #2196f3;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            color: #1976d2;
-        }
-
-        .info-box ul {
-            margin-left: 20px;
-            margin-top: 10px;
-        }
-
-        .info-box li {
-            margin-bottom: 5px;
-        }
-
-        /* Tabs Styles */
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e0e0e0;
-            padding-bottom: 0;
-        }
-
-        .tab-btn {
-            padding: 12px 24px;
-            background: transparent;
-            border: none;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 15px;
-            color: #666;
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .tab-btn:hover {
-            color: #667eea;
-            background: rgba(102, 126, 234, 0.05);
-        }
-
-        .tab-btn.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
-
-        .badge {
-            display: inline-block;
-            background: #4caf50;
-            color: white;
-            border-radius: 12px;
-            padding: 2px 8px;
-            font-size: 12px;
-            margin-left: 5px;
-            min-width: 20px;
-            text-align: center;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Bookmakers Grid */
         .bookmakers-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 15px;
-            margin-top: 20px;
+            margin-bottom: 30px;
         }
 
         .bookmaker-card {
-            background: white;
-            border: 2px solid #e0e0e0;
+            background: #f5f5f5;
+            padding: 20px;
             border-radius: 12px;
-            padding: 15px;
-            transition: all 0.3s;
             cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
         }
 
         .bookmaker-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .bookmaker-card.selected {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
             border-color: #667eea;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .bookmaker-checkbox {
-            display: flex;
-            align-items: flex-start;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .bookmaker-checkbox input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            margin-right: 12px;
-            cursor: pointer;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        .bookmaker-info {
-            flex: 1;
         }
 
         .bookmaker-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .bookmaker-status {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .bookmaker-card.selected .bookmaker-status {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .btn-search {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-2px);
+        }
+
+        #results {
+            margin-top: 30px;
+        }
+
+        /* ARBITRAGE CARDS */
+        .arbitrage-card {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .arb-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .arb-type-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .arb-profit {
+            background: #4CAF50;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 20px;
             font-weight: 700;
-            font-size: 16px;
-            margin-bottom: 5px;
+            box-shadow: 0 3px 10px rgba(76, 175, 80, 0.4);
         }
 
-        .bookmaker-sports {
-            font-size: 12px;
-            color: #999;
+        .arb-event {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* Bonuses List */
-        .bonuses-list {
+        .arb-quotes {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .quote-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .quote-bookmaker {
+            font-size: 14px;
+            color: #64B5F6;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .quote-outcome {
+            font-size: 16px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .quote-odd {
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .quote-stake {
+            font-size: 14px;
+            color: #4CAF50;
+        }
+
+        .arb-summary {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .summary-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .arb-links {
+            font-size: 13px;
+            padding-top: 15px;
+            border-top: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #666;
+        }
+
+        /* BONUS SECTION */
+        .bonus-form {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .bonus-form h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-add {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
         }
 
         .bonus-card {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
+            background: #f5f5f5;
             padding: 20px;
-            transition: all 0.3s;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 5px solid #4CAF50;
         }
 
-        .bonus-card:hover {
-            border-color: #4caf50;
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
-            transform: translateY(-2px);
+        .bonus-card.completed {
+            opacity: 0.6;
+            border-left-color: #9e9e9e;
         }
 
         .bonus-header {
@@ -483,718 +460,369 @@
         }
 
         .bonus-header h3 {
-            color: #667eea;
+            color: #333;
             font-size: 18px;
-            margin: 0;
         }
 
         .bonus-amount {
-            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            background: #4CAF50;
             color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .bonus-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #333;
-        }
-
-        .bonus-type {
-            color: #667eea;
-            font-weight: 600;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-
-        .bonus-conditions {
-            background: #f9f9f9;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 15px;
-            border-left: 3px solid #667eea;
-        }
-
-        .bonus-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 10px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .bonus-validity {
-            font-size: 12px;
-            color: #999;
-        }
-
-        .bonus-link {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .bonus-link:hover {
-            color: #764ba2;
-            transform: translateX(3px);
-        }
-
-        /* URL List Improvements */
-        .bookmaker-url {
-            border-left: 4px solid #667eea;
-        }
-
-        .custom-url {
-            border-left: 4px solid #764ba2;
-        }
-
-        /* Sub-tabs for bonus */
-        .sub-tab-btn {
-            padding: 10px 20px;
-            background: transparent;
-            border: none;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            color: #666;
-            transition: all 0.3s;
-        }
-
-        .sub-tab-btn:hover {
-            color: #667eea;
-            background: rgba(102, 126, 234, 0.05);
-        }
-
-        .sub-tab-btn.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
-
-        /* Calculator sections */
-        .calculator-section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 12px;
-            border: 2px solid #e0e0e0;
-        }
-
-        .calculator-section:last-child {
-            margin-bottom: 0;
-        }
-
-        /* Link bookmaker nelle card arbitraggio */
-        .bookmaker-link {
-            display: inline-block;
-            margin-left: 8px;
             padding: 6px 12px;
-            background: rgba(255,255,255,0.25);
-            color: white !important;
-            text-decoration: none;
-            border-radius: 6px;
-            font-size: 11px;
+            border-radius: 15px;
             font-weight: 600;
-            transition: all 0.2s;
-            border: 1px solid rgba(255,255,255,0.3);
         }
 
-        .bookmaker-link:hover {
-            background: rgba(255,255,255,0.35);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        .bonus-requirements {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
         }
 
-        .bookmaker-link:active {
-            transform: translateY(0);
+        .bonus-date {
+            color: #999;
+            font-size: 12px;
+            margin-bottom: 10px;
         }
 
-        /* ===== MOBILE RESPONSIVE ===== */
+        .bonus-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-danger {
+            background: #f44336;
+        }
+
+        /* CALCULATORS */
+        .calculator-tabs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .calc-tab {
+            padding: 12px;
+            background: #f5f5f5;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .calc-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .calculator {
+            display: none;
+        }
+
+        .calc-form {
+            background: #f5f5f5;
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        .calc-form h3 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .calc-result {
+            margin-top: 20px;
+        }
+
+        /* RESPONSIVE */
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-
-            h1 {
-                font-size: 24px;
-                padding: 15px;
-            }
-
-            .card {
-                padding: 15px;
-                margin-bottom: 15px;
-            }
-
-            .tabs {
-                flex-wrap: wrap;
-                gap: 5px;
-            }
-
-            .tab-btn {
-                padding: 10px 12px;
-                font-size: 13px;
-                flex: 1 1 auto;
-                min-width: 100px;
-            }
-
-            .badge {
-                font-size: 10px;
-                padding: 2px 6px;
-            }
-
-            /* Grid bookmaker 1 colonna su mobile */
-            .bookmakers-grid {
-                grid-template-columns: 1fr !important;
-            }
-
-            /* Bonus 1 colonna */
-            .bonuses-list {
-                grid-template-columns: 1fr !important;
-            }
-
-            /* Filtri impilati verticalmente */
-            #filtersSection > div:first-child {
-                grid-template-columns: 1fr !important;
-            }
-
-            /* URL items più grandi per touch */
-            .url-item {
-                padding: 15px;
-                font-size: 14px;
-            }
-
-            /* Bottoni più grandi per touch */
-            button {
-                min-height: 44px; /* iOS touch target size */
-                padding: 12px 20px;
-            }
-
-            .analyze-btn {
-                font-size: 16px;
-                padding: 15px;
-            }
-
-            /* Arbitrage cards più leggibili */
-            .arbitrage-opportunity {
-                padding: 15px;
-            }
-
-            .arbitrage-opportunity h3 {
-                font-size: 16px;
-            }
-
-            .odds-comparison {
+            .header {
                 flex-direction: column;
-                gap: 10px;
-            }
-
-            .odd-item {
-                padding: 15px;
-            }
-
-            /* Calcolatori stack verticale */
-            .calculator-section > div:first-of-type > div {
-                grid-template-columns: 1fr !important;
-            }
-
-            /* Input più grandi */
-            input, select, textarea {
-                font-size: 16px !important; /* Previene zoom iOS */
-                padding: 12px !important;
-            }
-
-            /* Bonus form 1 colonna */
-            #personalBonusSection > div:first-child > div {
-                grid-template-columns: 1fr !important;
-            }
-
-            /* Sub-tabs più piccoli */
-            .sub-tab-btn {
-                padding: 8px 12px;
-                font-size: 13px;
-            }
-
-            /* Logout button */
-            .logout-btn {
-                padding: 8px 15px;
-                font-size: 13px;
-            }
-
-            /* Link bookmaker più grandi su mobile */
-            .bookmaker-link {
-                display: block;
-                margin: 8px 0 0 0;
-                padding: 10px 15px;
-                font-size: 13px;
+                gap: 15px;
                 text-align: center;
             }
 
-            /* Bookmaker name wrap su mobile */
-            .bookmaker {
-                display: flex;
+            .tabs {
                 flex-direction: column;
-                align-items: flex-start;
             }
-        }
 
-        /* Tablet (768px - 1024px) */
-        @media (min-width: 769px) and (max-width: 1024px) {
             .bookmakers-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
+                grid-template-columns: 1fr;
             }
 
-            .bonuses-list {
-                grid-template-columns: repeat(2, 1fr) !important;
+            .arb-quotes {
+                grid-template-columns: 1fr;
             }
 
-            #filtersSection > div:first-child {
-                grid-template-columns: repeat(2, 1fr) !important;
+            .calculator-tabs {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Login Form -->
-    <div id="loginContainer" class="container">
-        <div class="logo">
-            <h1>💎 Arbitrage Analyzer</h1>
-            <p>Sistema di Analisi Quote Sportive</p>
-        </div>
-        
-        <div id="errorMsg" class="error"></div>
-        
-        <form id="loginForm">
-            <div class="form-group">
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen">
+        <div class="login-container">
+            <h1>🎯 Arbitrage Analyzer</h1>
+            <div class="version-badge">v2.7 - Over/Under Edition</div>
+            
+            <div class="input-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" required autocomplete="username">
+                <input type="text" id="username" placeholder="Inserisci username">
             </div>
             
-            <div class="form-group">
+            <div class="input-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required autocomplete="current-password">
+                <input type="password" id="password" placeholder="Inserisci password">
             </div>
             
-            <button type="submit" class="btn">Accedi</button>
-        </form>
+            <button class="btn-login" onclick="login()">🔐 Accedi</button>
+        </div>
     </div>
 
-    <!-- Dashboard -->
-    <div id="dashboard" class="container dashboard hidden">
-        <div class="dashboard-header">
-            <div class="welcome">Benvenuto, <span id="userDisplay"></span>!</div>
-            <button class="logout-btn" onclick="logout()">Logout</button>
+    <!-- MAIN APP -->
+    <div id="mainApp">
+        <div class="header">
+            <div>
+                <h1>🎯 Arbitrage Analyzer v2.7</h1>
+                <p style="color: #666; font-size: 13px; margin-top: 5px;">Over/Under Edition - Tutte le combinazioni vincenti</p>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    👤 <span id="userDisplay"></span>
+                </div>
+                <button class="btn-logout" onclick="logout()">Esci</button>
+            </div>
         </div>
 
-        <!-- Tabs Navigation -->
+        <!-- TABS -->
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('bookmakers')">
-                🎰 Bookmaker <span id="selectedCount" class="badge">0</span>
-            </button>
-            <button class="tab-btn" onclick="switchTab('custom')">
-                🔗 URL Personalizzati
-            </button>
-            <button class="tab-btn" onclick="switchTab('bonuses')">
-                🎁 Bonus
-            </button>
-            <button class="tab-btn" onclick="switchTab('calculators')">
-                🧮 Calcolatori
-            </button>
-            <button class="tab-btn" onclick="switchTab('settings')">
-                ⚙️ Impostazioni
-            </button>
+            <button class="tab active" onclick="showTab('bookmakers')">📊 Bookmaker</button>
+            <button class="tab" onclick="showTab('bonus')">🎁 Bonus</button>
+            <button class="tab" onclick="showTab('calculators')">🧮 Calcolatori</button>
         </div>
 
-        <!-- Tab: Bookmakers -->
-        <div id="bookmakersTab" class="tab-content active">
-            <div class="card">
-                <h2>🎰 Seleziona Bookmaker</h2>
-                <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
-                    Seleziona i bookmaker da analizzare. Ogni bookmaker includerà automaticamente le quote per Calcio, Tennis e Basket.
-                </p>
-                <div class="bookmakers-grid" id="bookmakersGrid">
-                    <!-- Populated by JS -->
+        <!-- BOOKMAKERS TAB -->
+        <div id="tab-bookmakers" class="tab-content">
+            <div class="section-header">
+                <h2>Seleziona Bookmaker</h2>
+                <div class="selected-count">
+                    <span id="selectedCount">0</span> selezionati
                 </div>
             </div>
+
+            <div id="bookmakersGrid" class="bookmakers-grid"></div>
+
+            <button class="btn-search" onclick="searchArbitrages()">
+                🔍 Cerca Arbitraggi
+            </button>
+
+            <div id="results"></div>
         </div>
 
-        <!-- Tab: Custom URLs -->
-        <div id="customTab" class="tab-content">
-            <div class="card">
-                <h2>🔗 Aggiungi URL Personalizzati</h2>
-                <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
-                    Aggiungi URL di altri bookmaker o pagine specifiche con quote.
-                </p>
-                <div class="url-input-group">
-                    <input type="text" id="urlInput" placeholder="https://esempio.com/quote/partita" />
-                    <button class="add-url-btn" onclick="addUrl()">➕ Aggiungi</button>
-                </div>
-            </div>
-        </div>
+        <!-- BONUS TAB -->
+        <div id="tab-bonus" class="tab-content hidden">
+            <h2 style="color: #333; margin-bottom: 25px;">💰 Gestione Bonus</h2>
 
-        <!-- Tab: Bonuses -->
-        <div id="bonusesTab" class="tab-content">
-            <div class="card">
-                <h2>🎁 Gestione Bonus</h2>
+            <div class="bonus-form">
+                <h3>➕ Aggiungi Nuovo Bonus</h3>
                 
-                <!-- Sub-tabs per bonus -->
-                <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0;">
-                    <button class="sub-tab-btn active" onclick="switchBonusTab('welcome')" id="welcomeBonusBtn">
-                        🎉 Bonus Benvenuto
-                    </button>
-                    <button class="sub-tab-btn" onclick="switchBonusTab('personal')" id="personalBonusBtn">
-                        ⭐ I Miei Bonus
-                    </button>
-                </div>
-                
-                <!-- Bonus Benvenuto -->
-                <div id="welcomeBonusSection">
-                    <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
-                        Bonus benvenuto dei principali bookmaker. Solo per nuovi utenti.
-                    </p>
-                    <div class="bonuses-list" id="bonusesList">
-                        <!-- Populated by JS -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Bookmaker *</label>
+                        <input type="text" id="bonusBookmaker" placeholder="es. Bet365">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Importo Bonus (€) *</label>
+                        <input type="number" id="bonusAmount" placeholder="es. 100">
                     </div>
                 </div>
                 
-                <!-- I Miei Bonus Personali -->
-                <div id="personalBonusSection" style="display: none;">
-                    <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
-                        Gestisci i tuoi bonus attivi. Aggiungi manualmente i bonus che trovi sui siti.
-                    </p>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Requisiti / Note</label>
+                        <textarea id="bonusRequirements" rows="2" placeholder="es. Rollover 3x, entro 30 giorni"></textarea>
+                    </div>
+                </div>
+                
+                <button class="btn-add" onclick="addBonus()">➕ Aggiungi Bonus</button>
+            </div>
+
+            <h3 style="color: #333; margin-bottom: 15px;">📋 I Tuoi Bonus</h3>
+            <div id="bonusList"></div>
+        </div>
+
+        <!-- CALCULATORS TAB -->
+        <div id="tab-calculators" class="tab-content hidden">
+            <h2 style="color: #333; margin-bottom: 25px;">🧮 Calcolatori Professionali</h2>
+
+            <div class="calculator-tabs">
+                <div class="calc-tab active" onclick="showCalculator('arbitrage')">
+                    📊 Arbitraggio
+                </div>
+                <div class="calc-tab" onclick="showCalculator('bonus')">
+                    🎁 Bonus Extraction
+                </div>
+                <div class="calc-tab" onclick="showCalculator('kelly')">
+                    🎯 Kelly Criterion
+                </div>
+                <div class="calc-tab" onclick="showCalculator('matched')">
+                    🔄 Matched Betting
+                </div>
+            </div>
+
+            <!-- Arbitrage Calculator -->
+            <div id="calc-arbitrage" class="calculator" style="display: block;">
+                <div class="calc-form">
+                    <h3>📊 Calcolatore Arbitraggio</h3>
                     
-                    <!-- Form aggiungi bonus -->
-                    <div style="background: white; padding: 20px; border-radius: 12px; border: 2px solid #e0e0e0; margin-bottom: 20px;">
-                        <h3 style="margin-bottom: 15px; font-size: 16px;">➕ Aggiungi Nuovo Bonus</h3>
-                        
-                        <div style="display: grid; gap: 15px;">
-                            <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Bookmaker:</label>
-                                <input type="text" id="newBonusBookmaker" placeholder="es: Bet365" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                            </div>
-                            
-                            <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Titolo:</label>
-                                <input type="text" id="newBonusTitle" placeholder="es: Bonus Ricarica Settimanale" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                            </div>
-                            
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                <div>
-                                    <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Importo:</label>
-                                    <input type="text" id="newBonusAmount" placeholder="es: €50" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                                </div>
-                                
-                                <div>
-                                    <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Tipo:</label>
-                                    <input type="text" id="newBonusType" placeholder="es: 50% fino a €50" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Condizioni:</label>
-                                <textarea id="newBonusConditions" placeholder="es: Rollover 3x su quote min 1.50" rows="2" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; resize: vertical;"></textarea>
-                            </div>
-                            
-                            <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Scadenza:</label>
-                                <input type="date" id="newBonusExpiry" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                            </div>
-                            
-                            <button onclick="addPersonalBonus()" style="width: 100%; padding: 12px; background: #4caf50; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
-                                ➕ Aggiungi Bonus
-                            </button>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Quota 1</label>
+                            <input type="number" step="0.01" id="arb-odd1" placeholder="es. 2.10">
+                        </div>
+                        <div class="form-group">
+                            <label>Quota 2</label>
+                            <input type="number" step="0.01" id="arb-odd2" placeholder="es. 2.05">
+                        </div>
+                        <div class="form-group">
+                            <label>Importo Totale (€)</label>
+                            <input type="number" step="0.01" id="arb-stake" placeholder="es. 100">
                         </div>
                     </div>
                     
-                    <!-- Lista bonus personali -->
-                    <div id="personalBonusesList">
-                        <!-- Populated by JS -->
-                    </div>
+                    <button class="btn-add" onclick="calculateArbitrage()">Calcola</button>
+                    
+                    <div id="arb-result" class="calc-result"></div>
                 </div>
             </div>
-        </div>
 
-        <!-- Tab: Calculators -->
-        <div id="calculatorsTab" class="tab-content">
-            <div class="card">
-                <h2>🧮 Calcolatori Matched Betting</h2>
-                <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
-                    Strumenti per calcolare puntate e profitti ottimali.
-                </p>
-                
-                <!-- Calcolatore Arbitraggio -->
-                <div class="calculator-section">
-                    <h3 style="color: #667eea; margin-bottom: 15px;">💎 Calcolatore Arbitraggio</h3>
-                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Calcola quanto puntare su ogni quota per profitto garantito.</p>
+            <!-- Bonus Extraction Calculator -->
+            <div id="calc-bonus" class="calculator">
+                <div class="calc-form">
+                    <h3>🎁 Calcolatore Bonus Extraction</h3>
                     
-                    <div style="background: white; padding: 20px; border-radius: 12px; border: 2px solid #e0e0e0;">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
-                            <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Quota 1:</label>
-                                <input type="number" id="arbOdd1" step="0.01" placeholder="2.10" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                            </div>
-                            <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Quota 2:</label>
-                                <input type="number" id="arbOdd2" step="0.01" placeholder="2.50" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                            </div>
-                            <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Budget Totale (€):</label>
-                                <input type="number" id="arbBudget" placeholder="100" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                            </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Importo Bonus (€)</label>
+                            <input type="number" step="0.01" id="bonus-amount" placeholder="es. 100">
                         </div>
-                        <button onclick="calculateArbitrage()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                            🔍 Calcola
-                        </button>
-                        <div id="arbResult" style="margin-top: 15px;"></div>
+                        <div class="form-group">
+                            <label>Rollover (volte)</label>
+                            <input type="number" step="1" id="bonus-rollover" placeholder="es. 3">
+                        </div>
                     </div>
-                </div>
-                
-                <!-- Calcolatore Estrazione Bonus -->
-                <div class="calculator-section">
-                    <h3 style="color: #667eea; margin-bottom: 15px;">🎁 Calcolatore Estrazione Bonus</h3>
-                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Calcola quanto puoi estrarre da un bonus con rollover.</p>
                     
-                    <div style="background: white; padding: 20px; border-radius: 12px; border: 2px solid #e0e0e0;">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
-                            <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Importo Bonus (€):</label>
-                                <input type="number" id="bonusAmount" placeholder="100" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                            </div>
-                            <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Rollover (x):</label>
-                                <input type="number" id="rollover" placeholder="3" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                            </div>
-                            <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Quota Media:</label>
-                                <input type="number" id="avgOdds" step="0.01" value="1.80" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                            </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Quota Back (Bookmaker)</label>
+                            <input type="number" step="0.01" id="bonus-back" placeholder="es. 2.00">
                         </div>
-                        <button onclick="calculateBonusExtraction()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                            🔍 Calcola
-                        </button>
-                        <div id="bonusResult" style="margin-top: 15px;"></div>
+                        <div class="form-group">
+                            <label>Quota Lay (Exchange)</label>
+                            <input type="number" step="0.01" id="bonus-lay" placeholder="es. 2.10">
+                        </div>
                     </div>
-                </div>
-                
-                <!-- Calcolatore Kelly -->
-                <div class="calculator-section">
-                    <h3 style="color: #667eea; margin-bottom: 15px;">📊 Calcolatore Kelly Criterion</h3>
-                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Calcola la puntata ottimale basata sulla probabilità di vincita.</p>
                     
-                    <div style="background: white; padding: 20px; border-radius: 12px; border: 2px solid #e0e0e0;">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
-                            <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Probabilità (%):</label>
-                                <input type="number" id="kellyProb" step="0.01" min="0" max="100" placeholder="55" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                            </div>
-                            <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Quota:</label>
-                                <input type="number" id="kellyOdds" step="0.01" placeholder="2.00" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                            </div>
-                            <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Bankroll (€):</label>
-                                <input type="number" id="kellyBankroll" placeholder="1000" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                            </div>
-                        </div>
-                        <button onclick="calculateKelly()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                            🔍 Calcola
-                        </button>
-                        <div id="kellyResult" style="margin-top: 15px;"></div>
-                    </div>
-                </div>
-                
-                <!-- Calcolatore Matched Betting -->
-                <div class="calculator-section">
-                    <h3 style="color: #667eea; margin-bottom: 15px;">🎯 Calcolatore Matched Betting</h3>
-                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Calcola puntata e lay per matched betting (back + lay).</p>
+                    <button class="btn-add" onclick="calculateBonus()">Calcola</button>
                     
-                    <div style="background: white; padding: 20px; border-radius: 12px; border: 2px solid #e0e0e0;">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
-                            <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Quota Back:</label>
-                                <input type="number" id="backOdds" step="0.01" placeholder="2.50" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                            </div>
-                            <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Quota Lay:</label>
-                                <input type="number" id="layOdds" step="0.01" placeholder="2.60" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                            </div>
-                            <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Puntata Back (€):</label>
-                                <input type="number" id="backStake" placeholder="100" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                            </div>
-                            <div>
-                                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px;">Commissione (%):</label>
-                                <input type="number" id="commission" step="0.1" value="2" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;" />
-                            </div>
-                        </div>
-                        <button onclick="calculateMatched()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                            🔍 Calcola
-                        </button>
-                        <div id="matchedResult" style="margin-top: 15px;"></div>
-                    </div>
+                    <div id="bonus-result" class="calc-result"></div>
                 </div>
             </div>
-        </div>
 
-        <!-- Tab: Settings -->
-        <div id="settingsTab" class="tab-content">
-            <div class="card">
-                <h2>⚙️ Configurazione API</h2>
-                <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
-                    Configura The-Odds-API per ottenere quote reali invece di dati simulati.
-                </p>
-                
-                <div class="info-box" style="margin-bottom: 20px;">
-                    <strong>📡 The-Odds-API</strong>
-                    <ul>
-                        <li>✅ 500 richieste gratuite al mese</li>
-                        <li>✅ Quote reali da 20+ bookmaker</li>
-                        <li>✅ Aggiornamenti in tempo reale</li>
-                        <li>🔗 Registrati su: <a href="https://the-odds-api.com" target="_blank" style="color: #667eea;">the-odds-api.com</a></li>
-                    </ul>
-                </div>
-
-                <div style="background: white; padding: 20px; border-radius: 12px; border: 2px solid #e0e0e0;">
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <label for="apiKeyInput" style="display: block; margin-bottom: 8px; font-weight: 600;">
-                            API Key:
-                        </label>
-                        <input 
-                            type="text" 
-                            id="apiKeyInput" 
-                            placeholder="Inserisci la tua API key da the-odds-api.com"
-                            style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-family: monospace;"
-                        />
+            <!-- Kelly Criterion Calculator -->
+            <div id="calc-kelly" class="calculator">
+                <div class="calc-form">
+                    <h3>🎯 Kelly Criterion</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Probabilità di Vincita (%)</label>
+                            <input type="number" step="0.1" id="kelly-prob" placeholder="es. 55">
+                        </div>
+                        <div class="form-group">
+                            <label>Quota</label>
+                            <input type="number" step="0.01" id="kelly-odd" placeholder="es. 2.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Bankroll Totale (€)</label>
+                            <input type="number" step="0.01" id="kelly-bankroll" placeholder="es. 1000">
+                        </div>
                     </div>
-
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <label style="display: flex; align-items: center; cursor: pointer;">
-                            <input 
-                                type="checkbox" 
-                                id="useRealDataCheckbox"
-                                style="width: 20px; height: 20px; margin-right: 10px; cursor: pointer;"
-                            />
-                            <span style="font-weight: 600;">Usa dati reali dalle API</span>
-                        </label>
-                        <p style="font-size: 12px; color: #999; margin-top: 5px; margin-left: 30px;">
-                            Se disabilitato, l'app userà dati simulati per demo
-                        </p>
-                    </div>
-
-                    <button 
-                        class="btn" 
-                        onclick="saveApiSettings()"
-                        style="width: 100%; margin-top: 10px;"
-                    >
-                        💾 Salva Configurazione
-                    </button>
-
-                    <div id="apiStatus" style="margin-top: 15px; padding: 12px; border-radius: 8px; display: none;">
-                        <!-- Status message -->
-                    </div>
-                </div>
-
-                <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 8px;">
-                    <strong style="color: #856404;">⚠️ Stato Attuale:</strong>
-                    <p id="currentApiStatus" style="margin-top: 8px; color: #856404; font-size: 14px;">
-                        <!-- Populated by JS -->
-                    </p>
+                    
+                    <button class="btn-add" onclick="calculateKelly()">Calcola</button>
+                    
+                    <div id="kelly-result" class="calc-result"></div>
                 </div>
             </div>
-        </div>
 
-        <!-- URL Summary (sempre visibile) -->
-        <div class="card">
-            <h2>📋 Riepilogo URL Selezionati</h2>
-            <div class="url-list" id="urlList"></div>
-            
-            <button class="analyze-btn" id="analyzeBtn" onclick="analyzeUrls()" disabled>
-                🔍 Analizza Quote
-            </button>
-        </div>
-
-        <!-- Results (sempre visibile) -->
-        <div class="card">
-            <h2>💰 Risultati Analisi</h2>
-            
-            <!-- Filtri e Ordinamento -->
-            <div id="filtersSection" style="display: none; margin-bottom: 20px; padding: 20px; background: #f9f9f9; border-radius: 12px; border: 2px solid #e0e0e0;">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                    <!-- Ordinamento -->
-                    <div>
-                        <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
-                            📊 Ordina per:
-                        </label>
-                        <select id="sortBy" onchange="applySortAndFilter()" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
-                            <option value="profit-desc">Profitto % (maggiore)</option>
-                            <option value="profit-asc">Profitto % (minore)</option>
-                            <option value="amount-desc">Profitto € (maggiore)</option>
-                            <option value="amount-asc">Profitto € (minore)</option>
-                            <option value="date-asc">Data evento (prima)</option>
-                            <option value="date-desc">Data evento (dopo)</option>
-                        </select>
+            <!-- Matched Betting Calculator -->
+            <div id="calc-matched" class="calculator">
+                <div class="calc-form">
+                    <h3>🔄 Matched Betting</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Puntata Back (€)</label>
+                            <input type="number" step="0.01" id="matched-back-stake" placeholder="es. 50">
+                        </div>
+                        <div class="form-group">
+                            <label>Quota Back</label>
+                            <input type="number" step="0.01" id="matched-back-odd" placeholder="es. 3.00">
+                        </div>
                     </div>
                     
-                    <!-- Filtro Sport -->
-                    <div>
-                        <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
-                            ⚽ Sport:
-                        </label>
-                        <select id="filterSport" onchange="applySortAndFilter()" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
-                            <option value="all">Tutti</option>
-                            <option value="calcio">Calcio</option>
-                            <option value="tennis">Tennis</option>
-                            <option value="basket">Basket</option>
-                            <option value="hockey">Hockey</option>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Quota Lay</label>
+                            <input type="number" step="0.01" id="matched-lay-odd" placeholder="es. 3.10">
+                        </div>
+                        <div class="form-group">
+                            <label>Commissione Exchange (%)</label>
+                            <input type="number" step="0.1" id="matched-commission" placeholder="es. 5" value="5">
+                        </div>
                     </div>
                     
-                    <!-- Filtro Profitto Minimo -->
-                    <div>
-                        <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
-                            💵 Profitto minimo %:
-                        </label>
-                        <input 
-                            type="number" 
-                            id="filterMinProfit" 
-                            value="0" 
-                            min="0" 
-                            max="100" 
-                            step="0.5"
-                            onchange="applySortAndFilter()"
-                            style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
-                        />
-                    </div>
+                    <button class="btn-add" onclick="calculateMatched()">Calcola</button>
                     
-                    <!-- Reset Filtri -->
-                    <div style="display: flex; align-items: flex-end;">
-                        <button 
-                            onclick="resetFilters()" 
-                            style="width: 100%; padding: 10px; background: #f44336; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;"
-                        >
-                            🔄 Reset Filtri
-                        </button>
-                    </div>
+                    <div id="matched-result" class="calc-result"></div>
                 </div>
-                
-                <!-- Contatore risultati -->
-                <div id="resultsCounter" style="margin-top: 15px; padding: 10px; background: white; border-radius: 8px; text-align: center; font-weight: 600; color: #667eea;">
-                    <!-- Popolato da JS -->
-                </div>
-            </div>
-            
-            <div id="results">
-                <p style="color: #999; text-align: center;">Seleziona almeno 2 bookmaker o aggiungi URL personalizzati, poi clicca su "Analizza Quote"</p>
             </div>
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <script src="app-v2.7.js"></script>
+    <script>
+        function showTab(tab) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            event.target.classList.add('active');
+        }
+    </script>
 </body>
 </html>
