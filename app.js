@@ -3,7 +3,7 @@
 // ============================================
 
 // CONFIGURAZIONE
-const API_KEY = 'cf34eda63e9bf4cf4e47b88ebc23ffe1';
+const API_KEY = '1747c23c4226411b632e76e5e376958d';
 const API_URL = 'https://api.the-odds-api.com/v4/sports';
 
 // Bookmakers disponibili
