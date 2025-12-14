@@ -24,8 +24,8 @@ const BOOKMAKERS = [
 
 // Password hash SHA-256
 const USERS = {
-    'NicMan89': 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', // password123
-    'Davide': '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5'  // davide456
+    'NicMan89': '774e797343ecca2d15f4055c809c7f3449c391cf2580f704e6c7abcaf9fdf765', // Hash di CR7
+    'Davide': 'eacc0d256abdfb52314d28592fd9cb8ce8e06dbae1c519ca3a258b1c2973c831'  // Hash di Davide_001
 };
 
 // Dati simulati quando API non disponibile
