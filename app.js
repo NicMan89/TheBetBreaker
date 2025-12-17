@@ -877,10 +877,10 @@ function displayResults(arbitrages) {
     if (arbitrages.length === 0) {
         resultsDiv.innerHTML = `
             <div style="text-align: center; padding: 40px;">
-                <p style="font-size: 18px; color: rgba(255,255,255,0.8);">
+                <p style="font-size: 18px; color: #ff6b6b;">
                     ❌ Nessun arbitraggio trovato con i bookmaker selezionati
                 </p>
-                <p style="font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 15px;">
+                <p style="font-size: 14px; color: #ff6b6b; margin-top: 15px;">
                     Prova a selezionare più bookmaker o riprova più tardi
                 </p>
             </div>
